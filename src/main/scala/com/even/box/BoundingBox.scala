@@ -16,7 +16,12 @@ object BoundingBox extends App{
   def nonOverlappingMaxBindingBox(lines: List[String]) = {
     val contiguousShapes = lineToStarRows _ andThen joinContiguousCol(lines.head.length) andThen joinContiguousRow apply(lines)
     val boxes = contiguousShapes.map(createBox)
-    filterNonOverlapping(boxes).maxByOption(boxArea).map{ sb => SpanningBox(sb.xmin+1, sb.ymin+1, sb.xmax+1, sb.ymax+1) }
+    filterNonOverlapping(boxes) match {
+      case Nil => None
+      case nonOverlapping =>
+        val zeroIndex = nonOverlapping.maxBy(boxArea)
+        Some(SpanningBox(zeroIndex.xmin + 1, zeroIndex.ymin + 1, zeroIndex.xmax + 1, zeroIndex.ymax + 1))
+    }
   }
 
   def lineToStarRows(lines: List[String]) =
